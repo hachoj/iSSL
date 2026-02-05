@@ -1,0 +1,5 @@
+imagenet-1k/
+imagenet-1k
+*.tar
+*.pt
+*.pth
