@@ -3,3 +3,4 @@ imagenet-1k
 *.tar
 *.pt
 *.pth
+*.egg-info
