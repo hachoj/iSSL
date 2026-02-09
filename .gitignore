@@ -4,3 +4,4 @@ imagenet-1k
 *.pt
 *.pth
 *.egg-info
+__pycahce__/
