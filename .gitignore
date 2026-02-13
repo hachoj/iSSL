@@ -5,3 +5,5 @@
 *.pth
 *.egg-info
 __pycahce__/
+output/*
+**/output/*
