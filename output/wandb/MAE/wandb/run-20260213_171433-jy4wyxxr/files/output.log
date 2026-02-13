@@ -1,0 +1,81 @@
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 363, in main
+    train(
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 188, in train
+    for idx, batch in enumerate(train_dataloader):
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/pipeline.py", line 105, in iterator
+    for sample in self.iterator1():
+                  ^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 732, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1506, in _next_data
+    return self._process_data(data, worker_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1541, in _process_data
+    data.reraise()
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/_utils.py", line 769, in reraise
+    raise exception
+TypeError: Caught TypeError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/_utils/worker.py", line 349, in _worker_loop
+    data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/_utils/fetch.py", line 42, in fetch
+    data = next(self.dataset_iter)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/pipeline.py", line 105, in iterator
+    for sample in self.iterator1():
+                  ^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 783, in _batched
+    for sample in data:
+                  ^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 700, in _map_tuple
+    if handler(exn):
+       ^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 147, in reraise_exception
+    raise exn
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 698, in _map_tuple
+    sample[i] = args[i](sample[i])
+                ^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torchvision/transforms/v2/_container.py", line 52, in forward
+    outputs = transform(*inputs)
+              ^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torchvision/transforms/v2/_transform.py", line 69, in forward
+    self.transform(inpt, params) if needs_transform else inpt
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torchvision/transforms/v2/_geometry.py", line 311, in transform
+    return self._call_kernel(
+           ^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torchvision/transforms/v2/_transform.py", line 49, in _call_kernel
+    return kernel(inpt, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torchvision/transforms/v2/functional/_utils.py", line 32, in wrapper
+    output = kernel(inpt.as_subclass(torch.Tensor), *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torchvision/transforms/v2/functional/_geometry.py", line 2701, in resized_crop_image
+    return resize_image(image, size, interpolation=interpolation, antialias=antialias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torchvision/transforms/v2/functional/_geometry.py", line 324, in resize_image
+    image = interpolate(
+            ^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/functional.py", line 4651, in interpolate
+    raise TypeError(
+TypeError: expected size to be one of int or Tuple[int] or Tuple[int, int] or Tuple[int, int, int], but got size with types [<class 'omegaconf.listconfig.ListConfig'>, <class 'omegaconf.listconfig.ListConfig'>]
+
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

@@ -1,0 +1,67 @@
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 363, in main
+    train(
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 188, in train
+    for idx, batch in enumerate(train_dataloader):
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/pipeline.py", line 105, in iterator
+    for sample in self.iterator1():
+                  ^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 732, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1506, in _next_data
+    return self._process_data(data, worker_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1541, in _process_data
+    data.reraise()
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/_utils.py", line 769, in reraise
+    raise exception
+FileNotFoundError: Caught FileNotFoundError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/_utils/worker.py", line 349, in _worker_loop
+    data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/utils/data/_utils/fetch.py", line 42, in fetch
+    data = next(self.dataset_iter)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/pipeline.py", line 105, in iterator
+    for sample in self.iterator1():
+                  ^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 783, in _batched
+    for sample in data:
+                  ^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 692, in _map_tuple
+    for sample in data:
+                  ^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 658, in _to_tuple
+    for sample in data:
+                  ^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 520, in _map
+    for sample in data:
+                  ^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 358, in _shuffle
+    for sample in data:
+                  ^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/compat.py", line 314, in check_empty
+    for sample in source:
+                  ^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/tariterators.py", line 230, in group_by_keys
+    for filesample in data:
+                      ^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/tariterators.py", line 178, in tar_file_expander
+    for source in data:
+                  ^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/cache.py", line 219, in __call__
+    if self.handler(exn):
+       ^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/filters.py", line 147, in reraise_exception
+    raise exn
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/webdataset/cache.py", line 213, in __call__
+    stream = open(parsed.path, "rb")
+             ^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/chojnowski.h/weishao/chojnowski.h/iSSL/hiera/data/imagenet-1k/train/imagenet-1k_00000.tar'
+
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

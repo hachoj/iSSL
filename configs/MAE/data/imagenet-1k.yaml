@@ -1,0 +1,5 @@
+_target_: core.data.create_imagenet_train_val
+batch_size: ${train.batch_size}
+image_size: ${train.input_size}
+mode: full
+# "test": "/home/chojnowski.h/weishao/chojnowski.h/iSSL/hiera/data/imagenet-1k/test/imagenet-1k_{00000..00007}.tar",

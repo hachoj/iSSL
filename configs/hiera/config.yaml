@@ -1,0 +1,7 @@
+defaults:
+  - data: imagenet-1k
+  - model: hiera
+  - decoder: decoder
+  - train: hiera
+  - wandb: hiera
+  - _self_

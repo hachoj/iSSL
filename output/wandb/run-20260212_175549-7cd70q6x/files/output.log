@@ -1,0 +1,21 @@
+/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/backends/cuda/__init__.py:131: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+  return torch._C._get_cublas_allow_tf32()
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/blue/weishao/chojnowski.h/iSSL/hiera/train_hiera.py", line 194, in main
+    train(
+  File "/blue/weishao/chojnowski.h/iSSL/hiera/train_hiera.py", line 109, in train
+    pred = decoder(logits, mask)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/iSSL/hiera/models/decoder.py", line 42, in forward
+    empty_image[mask] = pred.reshape(-1, C)
+    ~~~~~~~~~~~^^^^^^
+RuntimeError: Index put requires the source and destination dtypes match, got Float for the destination and BFloat16 for the source.
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

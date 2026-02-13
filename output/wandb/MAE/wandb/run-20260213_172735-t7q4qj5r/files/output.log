@@ -1,0 +1,37 @@
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 366, in main
+    train(
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 199, in train
+    logits, mask = model(image, mask_ratio=cfg.train.mask_ratio)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1661, in forward
+    else self._run_ddp_forward(*inputs, **kwargs)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1487, in _run_ddp_forward
+    return self.module(*inputs, **kwargs)  # type: ignore[index]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/iSSL/core/models/ViT.py", line 60, in forward
+    x, mask = self.masked_forward(x, mask_ratio=mask_ratio)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/iSSL/core/models/ViT.py", line 71, in masked_forward
+    x, mask = self.mask_tokens(x, mask_ratio=mask_ratio)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/iSSL/core/models/ViT.py", line 94, in mask_tokens
+    x_masked[mask] = 0
+    ~~~~~~~~^^^^^^
+IndexError: The shape of the mask [256, 256, 1] at index 2 does not match the shape of the indexed tensor [256, 256, 768] at index 2
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

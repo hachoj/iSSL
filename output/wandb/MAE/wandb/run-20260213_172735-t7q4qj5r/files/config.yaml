@@ -1,0 +1,115 @@
+_wandb:
+    value:
+        cli_version: 0.23.1
+        e:
+            g2fcpz8adf8pcekc22t1d71nuya08kxb:
+                codePath: scripts/train_MAE.py
+                codePathLocal: scripts/train_MAE.py
+                cpu_count: 112
+                cpu_count_logical: 112
+                cudaVersion: "12.8"
+                disk:
+                    /:
+                        total: "41922297856"
+                        used: "25352658944"
+                email: hjchojnowski@gmail.com
+                executable: /blue/weishao/chojnowski.h/.conda/envs/issl/bin/python
+                git:
+                    commit: c3e535f5e1b1764fa78d000a8ca8dfcb20a0e8b1
+                    remote: git@github.com:hachoj/iSSL.git
+                gpu: NVIDIA B200
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Blackwell
+                      cudaCores: 18944
+                      memoryTotal: "192265846784"
+                      name: NVIDIA B200
+                      uuid: GPU-3d10fcdc-af0c-acd5-253e-8f58c3d943d4
+                host: c0904a-s5.ufhpc
+                memory:
+                    total: "2163693170688"
+                os: Linux-5.14.0-503.40.1.el9_5.x86_64-x86_64-with-glibc2.34
+                program: /blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py
+                python: CPython 3.12.12
+                root: output/wandb/MAE
+                slurm:
+                    cluster_name: hipergator
+                    conf: /opt/slurm/etc/slurm.conf
+                    cpus_on_node: "14"
+                    cpus_per_task: "14"
+                    gpus: "1"
+                    gpus_on_node: "1"
+                    gtids: "0"
+                    job_account: weishao
+                    job_cpus_per_node: "14"
+                    job_end_time: "1771401776"
+                    job_gid: "4297"
+                    job_gpus: "5"
+                    job_id: "24862883"
+                    job_name: vscode_b200
+                    job_nodelist: c0904a-s5
+                    job_num_nodes: "1"
+                    job_partition: hpg-b200
+                    job_qos: weishao
+                    job_start_time: "1770969776"
+                    job_uid: "2400"
+                    job_user: chojnowski.h
+                    jobid: "24862883"
+                    localid: "0"
+                    mem_per_node: "65536"
+                    nnodes: "1"
+                    nodeid: "0"
+                    nodelist: c0904a-s5
+                    nprocs: "1"
+                    ntasks: "1"
+                    oom_kill_step: "0"
+                    prio_process: "0"
+                    procid: "0"
+                    submit_dir: /home/chojnowski.h
+                    submit_host: c0611a-s7.ufhpc
+                    task_pid: "3527244"
+                    tasks_per_node: "1"
+                    tmpdir: /scratch/local/24862883
+                    topology_addr: ibswb200.ibsw0902.c0904a-s5
+                    topology_addr_pattern: switch.switch.node
+                    tres_per_task: cpu=14
+                startedAt: "2026-02-13T22:27:35.649372Z"
+                writerId: g2fcpz8adf8pcekc22t1d71nuya08kxb
+        m:
+            - "1": train_step
+              "6":
+                - 3
+              "7": []
+            - "1": epoch_step
+              "6":
+                - 3
+              "7": []
+            - "2": train/*
+              "5": 1
+              "6":
+                - 1
+              "7": []
+            - "2": epoch/*
+              "5": 2
+              "6":
+                - 1
+              "7": []
+        python_version: 3.12.12
+        t:
+            "1":
+                - 1
+                - 41
+                - 50
+                - 105
+            "2":
+                - 1
+                - 41
+                - 50
+                - 105
+            "3":
+                - 7
+                - 13
+            "4": 3.12.12
+            "5": 0.23.1
+            "12": 0.23.1
+            "13": linux-x86_64

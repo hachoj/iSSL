@@ -1,0 +1,3 @@
+project: hiera
+name: hiera_adamw_test_test
+enabled: true

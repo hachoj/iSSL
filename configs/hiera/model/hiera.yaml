@@ -1,0 +1,18 @@
+_target_: hiera.models.Hiera
+# Hiera-B: channels [96, 192, 384, 768], blocks [2, 3, 16, 3], heads [1, 2, 4, 8], 9G FLOPs, 52M parameters.
+dims: [96, 192, 384, 768]
+blocks: [2, 3, 16, 3]
+heads: [1, 2, 4, 8]
+mlp_multiplier: 4
+# Flattened mask-unit size in tokens. For 2D, set this to (side^2):
+# e.g., 8x8 token windows -> window_size: 64.
+window_size: 64
+input_size: [224, 224]
+patch_kernel: [7, 7]
+patch_stride: [4, 4]
+patch_padding: [3, 3]
+# Per-axis q pooling stride. Flattened stride used in blocks is prod(q_stride):
+# e.g., [2, 2] -> flattened q_stride 4 (= 2x2 = side^2 for 2D square pooling).
+q_stride: [2, 2]
+drop_path_p: ${train.drop_path_p}
+use_bias: True

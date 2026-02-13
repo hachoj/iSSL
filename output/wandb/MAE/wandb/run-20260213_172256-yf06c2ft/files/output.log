@@ -1,0 +1,35 @@
+==================================================
+boolean_mask: torch.Size([256, 256, 1]), 16288
+pred: torch.Size([256, 256, 768])
+==================================================
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 363, in main
+    train(
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 200, in train
+    pred = decoder(logits, mask)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1661, in forward
+    else self._run_ddp_forward(*inputs, **kwargs)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1487, in _run_ddp_forward
+    return self.module(*inputs, **kwargs)  # type: ignore[index]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/.conda/envs/issl/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/blue/weishao/chojnowski.h/iSSL/core/models/decoder.py", line 77, in forward
+    empty_image[boolean_mask] = pred
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+IndexError: The shape of the mask [256, 256, 1] at index 2 does not match the shape of the indexed tensor [256, 256, 512] at index 2
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

@@ -1,0 +1,4 @@
+_target_: hiera.models.Decoder
+dim: ${model.dims.3}
+num_blocks: 8
+num_heads: 16

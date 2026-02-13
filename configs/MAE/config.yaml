@@ -1,0 +1,14 @@
+defaults:
+  - data: imagenet-100
+  - model: MAE
+  - decoder: decoder
+  - train: MAE
+  - wandb: MAE
+  - _self_
+
+hydra:
+  run:
+    dir: output/hydra/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: output/hydra/${now:%Y-%m-%d}
+    subdir: ${now:%H-%M-%S}

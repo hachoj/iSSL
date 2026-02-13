@@ -1,0 +1,15 @@
+_target_: core.models.ViT
+# Hiera-B: channels [96, 192, 384, 768], blocks [2, 3, 16, 3], heads [1, 2, 4, 8], 9G FLOPs, 52M parameters.
+dim: 768
+num_blocks: 12
+num_heads: 12
+mlp_ratio: 4
+
+input_size: ${train.input_size}
+patch_kernel: ${train.patch_kernel}
+patch_stride: ${train.patch_stride}
+patch_padding: ${train.patch_padding}
+
+drop_path_p: ${train.drop_path_p}
+use_swiglu: ${train.use_swiglu}
+use_bias: ${train.use_bias}

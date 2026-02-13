@@ -1,0 +1,10 @@
+_target_: core.models.Decoder
+prev_dim: ${model.dim}
+dim: 512
+num_blocks: 8
+num_heads: 16
+mlp_ratio: 4
+input_size: ${train.input_size}
+patch_stride: ${train.patch_stride}
+use_swiglu: ${train.use_swiglu}
+use_bias: ${train.use_bias}

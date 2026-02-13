@@ -1,0 +1,4 @@
+project: MAE
+name: MAE_test
+dir: output/wandb/MAE
+enabled: true

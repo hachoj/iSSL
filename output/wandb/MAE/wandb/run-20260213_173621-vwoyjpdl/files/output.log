@@ -1,0 +1,10 @@
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 357, in main
+    train(
+  File "/blue/weishao/chojnowski.h/iSSL/scripts/train_MAE.py", line 206, in train
+    muon_scheduler.step_update()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SequentialLR' object has no attribute 'step_update'
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

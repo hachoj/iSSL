@@ -1,0 +1,69 @@
+data:
+  _target_: core.data.create_imagenet_train_val
+  batch_size: ${train.batch_size}
+  image_size: ${train.input_size}
+  mode: mini
+model:
+  _target_: core.models.ViT
+  dim: 768
+  num_blocks: 12
+  num_heads: 12
+  mlp_ratio: 4
+  input_size: ${train.input_size}
+  patch_kernel: ${train.patch_kernel}
+  patch_stride: ${train.patch_stride}
+  patch_padding: ${train.patch_padding}
+  drop_path_p: ${train.drop_path_p}
+  use_swiglu: ${train.use_swiglu}
+  use_bias: ${train.use_bias}
+decoder:
+  _target_: core.models.Decoder
+  dim: 512
+  num_blocks: 8
+  num_heads: 16
+  mlp_ratio: 4
+  input_size: ${train.input_size}
+  patch_stride: ${train.patch_stride}
+  use_swiglu: ${train.use_swiglu}
+  use_bias: ${train.use_bias}
+train:
+  mask_ratio: 0.75
+  seed: 42
+  drop_path_p: 0.2
+  use_swiglu: false
+  use_bias: true
+  input_size:
+  - 224
+  - 224
+  patch_kernel:
+  - 14
+  - 14
+  patch_stride:
+  - 14
+  - 14
+  patch_padding:
+  - 0
+  - 0
+  batch_size: 256
+  num_epochs: 400
+  warmup_epochs: 40
+  weight_decay: 0.05
+  muon_mode: match_rms_adamw
+  lr_adamw: 0.0008
+  lr_muon: 0.0008
+  adamw_betas:
+  - 0.9
+  - 0.95
+  grad_clip: -1
+  grad_accum: 1
+  is_restore: false
+  checkpoint_init_dir: ''
+  checkpoint_dir: output/checkpoints/MAE/
+  every_n_checkpoint: 1
+  every_n_epoch: 1
+  every_n_step: 10
+wandb:
+  project: MAE
+  name: MAE_test
+  dir: output/wandb/MAE
+  enabled: true
