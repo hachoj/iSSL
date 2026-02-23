@@ -1,17 +1,18 @@
 # -- MAE --
-mask_ratio: 0.75
+mask_ratio: 0.6
 seed: 42
-drop_path_p: 0.2
+drop_path_p: 0.0
+norm: rmsnorm
 use_swiglu: False
 use_bias: True
 
 # -- image stuff --
 input_size: [224, 224]
-patch_kernel: [14, 14]
-patch_stride: [14, 14]
+patch_kernel: [16, 16]
+patch_stride: [16, 16]
 patch_padding: [0, 0]
 
-batch_size: 256 
+batch_size: 2048
 num_epochs: 400 
 warmup_epochs: 40
 weight_decay: 0.05
@@ -24,13 +25,14 @@ adamw_betas: [0.9, 0.95]
 # lr_adamw: 1e-4
 # lr_muon: 0.01
 grad_clip: -1
-grad_accum: 1
+grad_accum: 2
 is_restore: false
 checkpoint_init_dir: ""
 
 # -- Logging --
-checkpoint_dir: "output/checkpoints/MAE/"
+checkpoint_dir: "output/checkpoints/MAE/ViT-S16-RMSNorm"
 every_n_checkpoint: 1
+every_n_val: 10
 
 every_n_epoch: 1
 every_n_step: 10

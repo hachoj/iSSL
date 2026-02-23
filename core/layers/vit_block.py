@@ -17,20 +17,22 @@ class VitBlock(nn.Module):
         mlp_ratio: float,
         num_heads: int,
         drop_path_p: float,
+        norm: str = "layernorm",
         use_swiglu: bool = False,
         use_bias=True,
     ):
         super().__init__()
+        assert norm in ["layernorm", "rmsnorm"]
         self.dim = dim
         self.drop_path = DropPath(drop_path_p)
 
-        self.norm1 = nn.LayerNorm(dim)
+        self.norm1 = nn.LayerNorm(dim) if norm == "layernorm" else nn.RMSNorm(dim)
         self.attention = AttentionBlock(
             dim=dim,
             num_heads=num_heads,
             use_bias=use_bias,
         )
-        self.norm2 = nn.LayerNorm(dim)
+        self.norm2 = nn.LayerNorm(dim) if norm == "layernorm" else nn.RMSNorm(dim)
         self.ffn = FFN(
             dim=dim,
             mlp_ratio=mlp_ratio,

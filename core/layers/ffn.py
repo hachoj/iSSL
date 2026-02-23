@@ -8,7 +8,7 @@ class FFN(nn.Module):
     def __init__(
         self,
         dim: int,
-        mlp_ratio: float,
+        mlp_ratio: float,   
         use_swiglu: bool = False,
         use_bias: bool = True,
     ):

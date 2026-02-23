@@ -4,3 +4,5 @@
 {"time":"2026-02-13T17:36:54.203867427-05:00","level":"INFO","msg":"stream: started","id":"vmxp6rdy"}
 {"time":"2026-02-13T17:36:54.203888862-05:00","level":"INFO","msg":"sender: started","stream_id":"vmxp6rdy"}
 {"time":"2026-02-13T17:36:54.203894996-05:00","level":"INFO","msg":"writer: started","stream_id":"vmxp6rdy"}
+{"time":"2026-02-13T17:40:25.100368875-05:00","level":"INFO","msg":"stream: closing","id":"vmxp6rdy"}
+{"time":"2026-02-13T17:40:25.640763233-05:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}

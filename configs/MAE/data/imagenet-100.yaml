@@ -2,3 +2,4 @@ _target_: core.data.create_imagenet_train_val
 batch_size: ${train.batch_size}
 image_size: ${train.input_size}
 mode: mini
+seed: ${train.seed}

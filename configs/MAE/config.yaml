@@ -1,5 +1,5 @@
 defaults:
-  - data: imagenet-100
+  - data: imagenet-1k.yaml
   - model: MAE
   - decoder: decoder
   - train: MAE

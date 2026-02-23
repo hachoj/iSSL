@@ -7,3 +7,5 @@
 __pycahce__/
 output/*
 **/output/*
+logs/*
+**/logs/*

@@ -1,10 +1,7 @@
-import math
 from typing import Tuple
 
 import torch
 import torch.nn as nn
-import transformer_engine.pytorch as te
-from einops import rearrange
 from jaxtyping import Bool, Float
 from torch import Tensor
 
@@ -23,10 +20,12 @@ class ViT(nn.Module):
         patch_stride: Tuple[int, int] = (4, 4),
         patch_padding: Tuple[int, int] = (3, 3),
         drop_path_p: float = 0.0,
+        norm: str = "layernorm",
         use_swiglu: bool = False,
         use_bias=True,
     ):
         super().__init__()
+        assert norm in ["layernorm", "rmsnorm"]
         self.num_patches = (input_size[0] // patch_stride[0]) * (input_size[1] // patch_stride[1])
         self.patchify = Patchify(
             in_channels=3,
@@ -48,6 +47,7 @@ class ViT(nn.Module):
                     mlp_ratio=mlp_ratio,
                     num_heads=num_heads,
                     drop_path_p=drop_path_p,
+                    norm=norm,
                     use_swiglu=use_swiglu,
                     use_bias=use_bias,
                 )

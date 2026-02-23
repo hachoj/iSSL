@@ -20,10 +20,12 @@ class Decoder(nn.Module):
         mlp_ratio: float,
         input_size: Tuple[int, int],
         patch_stride: Tuple[int, int],
+        norm: str = "layernorm",
         use_swiglu: bool = False,
         use_bias=True,
     ):
         super().__init__()
+        assert norm in ["layernorm", "rmsnorm"]
         self.num_patches = (input_size[0] // patch_stride[0]) * (
             input_size[1] // patch_stride[1]
         )
@@ -50,6 +52,7 @@ class Decoder(nn.Module):
                     mlp_ratio=mlp_ratio,
                     num_heads=num_heads,
                     drop_path_p=0.0,
+                    norm=norm,
                     use_swiglu=use_swiglu,
                     use_bias=use_bias,
                 )

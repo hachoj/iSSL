@@ -20,7 +20,7 @@ from torch import Tensor
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 # Optimizers
-from torch.optim import AdamW, Muon
+from torch.optim import AdamW
 
 from core.utils import cosine_with_linear_wamrup
 
@@ -83,10 +83,9 @@ def loss_fn(
     return loss
 
 
-def build_param_groups(model, lr_adamw, lr_muon, wd):
-    muon_params = []  # 2D weights → Muon, with decay
-    adamw_decay = []  # non-2D that still get decay (rare, but possible)
-    adamw_no_decay = []  # biases, norms, embeddings → AdamW, no decay
+def build_param_groups(model, lr_adamw, wd):
+    adamw_decay = []
+    adamw_no_decay = []
 
     no_decay_keywords = {"bias", "norm", "ln_", "layernorm", "embedding"}
 
@@ -97,23 +96,17 @@ def build_param_groups(model, lr_adamw, lr_muon, wd):
         # Check if this param should skip weight decay
         skip_decay = any(kw in name.lower() for kw in no_decay_keywords)
 
-        if p.ndim == 2 and not skip_decay:
-            # Standard weight matrices → Muon
-            muon_params.append(p)
-        elif skip_decay:
+        if skip_decay:
             # Biases, norms, embeddings → AdamW without decay
             adamw_no_decay.append(p)
         else:
-            # Everything else (e.g., 1D scales) → AdamW with decay
+            # All other trainable parameters get AdamW with weight decay.
             adamw_decay.append(p)
 
-    return {
-        "muon": [{"params": muon_params, "lr": lr_muon}],
-        "adamw": [
-            {"params": adamw_decay, "lr": lr_adamw, "weight_decay": wd},
-            {"params": adamw_no_decay, "lr": lr_adamw, "weight_decay": 0.0},
-        ],
-    }
+    return [
+        {"params": adamw_decay, "lr": lr_adamw, "weight_decay": wd},
+        {"params": adamw_no_decay, "lr": lr_adamw, "weight_decay": 0.0},
+    ]
 
 
 def strip_orig_mod(state_dict: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
@@ -142,9 +135,7 @@ def train(
     model,
     decoder,
     adamw,
-    muon,
     adamw_scheduler,
-    muon_scheduler,
     train_dataloader,
     val_dataloader,
     cfg,
@@ -180,7 +171,6 @@ def train(
         micro_step = 0
         for idx, batch in enumerate(train_dataloader):
             if micro_step == 0:
-                muon.zero_grad(set_to_none=True)
                 adamw.zero_grad(set_to_none=True)
                 accum_window_loss = torch.zeros((), device=device)
                 accum_window_steps = torch.zeros((), device=device)
@@ -206,9 +196,7 @@ def train(
                 grad_norm = torch.nn.utils.clip_grad_norm_(
                     list(model.parameters()) + list(decoder.parameters()), grad_clip
                 )
-                muon.step()
                 adamw.step()
-                muon_scheduler.step()
                 adamw_scheduler.step()
                 optimizer_step += 1
                 if (
@@ -241,9 +229,7 @@ def train(
             grad_norm = torch.nn.utils.clip_grad_norm_(
                 list(model.parameters()) + list(decoder.parameters()), grad_clip
             )
-            muon.step()
             adamw.step()
-            muon_scheduler.step()
             adamw_scheduler.step()
             optimizer_step += 1
 
@@ -308,7 +294,6 @@ def train(
                 {
                     "model": model.module.state_dict(),
                     "decoder": decoder.module.state_dict(),
-                    "optimizer_muon": muon.state_dict(),
                     "optimizer_adamw": adamw.state_dict(),
                     "step": epoch,
                 },
@@ -343,20 +328,12 @@ def main(cfg: DictConfig):
     groups = build_param_groups(
         nn.ModuleDict({"encoder": model, "decoder": decoder}),
         lr_adamw=cfg.train.lr_adamw,
-        lr_muon=cfg.train.lr_muon,
         wd=cfg.train.weight_decay,
     )
 
-    muon = Muon(groups["muon"], adjust_lr_fn=cfg.train.muon_mode)
-    adamw = AdamW(groups["adamw"], betas=tuple(cfg.train.adamw_betas))  # pyrefly:ignore
+    adamw = AdamW(groups, betas=tuple(cfg.train.adamw_betas))  # pyrefly:ignore
     optimizer_steps_per_epoch = max(
         1, math.ceil((1_281_167 // cfg.train.batch_size) / cfg.train.grad_accum)
-    )
-    muon_scheduler = cosine_with_linear_wamrup(
-        optimizer=muon,
-        num_epochs=cfg.train.num_epochs,
-        warmup_epochs=cfg.train.warmup_epochs,
-        steps_per_epoch=optimizer_steps_per_epoch,
     )
     adamw_scheduler = cosine_with_linear_wamrup(
         optimizer=adamw,
@@ -389,9 +366,7 @@ def main(cfg: DictConfig):
         model=model,
         decoder=decoder,
         adamw=adamw,
-        muon=muon,
         adamw_scheduler=adamw_scheduler,
-        muon_scheduler=muon_scheduler,
         train_dataloader=train_dataloader,
         val_dataloader=val_dataloader,
         cfg=cfg,
