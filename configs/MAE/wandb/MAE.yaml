@@ -1,4 +1,4 @@
 project: MAE
-name: MAE_test
+name: ViT-S/16-Muon-w/bias-SwiGLU-RMSNorm
 dir: output/wandb/MAE
 enabled: true

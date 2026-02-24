@@ -3,7 +3,7 @@ mask_ratio: 0.6
 seed: 42
 drop_path_p: 0.0
 norm: rmsnorm
-use_swiglu: False
+use_swiglu: True
 use_bias: True
 
 # -- image stuff --
