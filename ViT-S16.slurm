@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=ViTS-16-no-bias
+#SBATCH --job-name=ViTS-16-RMS-no-bias
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=1
