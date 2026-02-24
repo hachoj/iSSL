@@ -1,9 +1,7 @@
 ## iSSL
 
-This repo is a compilation of my personal research into image based Self-Supervised Learning. 
-It is currently a work in progress but the plan is to cover these technolgoies.
+Current results from this project.
 
- - [x] DINO based SSL (self-distillation + iBOT loss)
- - [ ] Efficient MAE systems (Hiere + MAE)
- - [ ] JEPA style objectives (latent space only)
- - [ ] CLIP objectives (weakly-supervised)
+https://harrisonchojnowski.netlify.app/posts/project-geometry-aware-microus-inr/
+
+[Model Optimization Testing](https://harrisonchojnowski.netlify.app/posts/evaluating-modern-llm-optimizations-on-vit/)
