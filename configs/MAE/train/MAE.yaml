@@ -4,7 +4,7 @@ seed: 42
 drop_path_p: 0.0
 norm: rmsnorm
 use_swiglu: True
-use_bias: True
+use_bias: False
 
 # -- image stuff --
 input_size: [224, 224]
@@ -30,7 +30,7 @@ is_restore: false
 checkpoint_init_dir: ""
 
 # -- Logging --
-checkpoint_dir: "output/checkpoints/MAE/ViT-S16-RMSNorm"
+checkpoint_dir: "output/checkpoints/MAE/ViT-S16-RMSNorm-NoBias-SwiGLU"
 every_n_checkpoint: 1
 every_n_val: 10
 
