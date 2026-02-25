@@ -1,5 +1,5 @@
 # Define scratch path and dataset source
-LOCAL_DATA_PATH="/scratch/local/24862883/ImageNet1k"
+LOCAL_DATA_PATH="/scratch/local/25506805/ImageNet1k"
 SOURCE_DATA_PATH="/blue/weishao/chojnowski.h/data/imagenet-1k"
  
 # Make sure local scratch directory exists

@@ -24,12 +24,35 @@ class AttentiveProbe(nn.Module):
 
     def forward(self, x: Float[Tensor, "B N C"]):
         B = x.shape[0]
-        x = rearrange(self.kv_proj(x), "B N (two C) -> two B N C", two=2)
+        x = rearrange(
+            self.kv_proj(x),
+            "B N (two num_heads head_dim) -> two B num_heads N head_dim",
+            two=2,
+            num_heads=self.num_heads,
+            head_dim=self.head_dim,
+        )
         k, v = x[0], x[1]
 
-        q = repeat(self.query_token, "C -> B C", B=B)
+        q = repeat(
+            self.query_token,
+            "C -> B C",
+            B=B,
+        )
+        q = rearrange(
+            q,
+            "B (num_heads head_dim) -> B num_heads 1 head_dim",
+            num_heads=self.num_heads,
+            head_dim=self.head_dim,
+        )
 
-        x = F.scaled_dot_product_attention(query=q, key=k, value=v)
+        x: Float[Tensor, "B num_heads 1 head_dim"] = F.scaled_dot_product_attention(query=q, key=k, value=v)
+
+        x = rearrange(
+            x,
+            "B num_heads 1 head_dim -> B (num_heads head_dim)",
+            num_heads=self.num_heads,
+            head_dim=self.head_dim,
+        )
 
         return self.linear_out(x)
 

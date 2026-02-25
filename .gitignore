@@ -9,3 +9,9 @@ output/*
 **/output/*
 logs/*
 **/logs/*
+output/hyrda/
+output/hyrda
+output/wandb/
+output/wandb/*
+output/wandb
+output/

@@ -7,7 +7,6 @@ import numpy as np
 import torch
 import torch.distributed as dist
 import torch.nn.functional as F
-import wandb
 from jaxtyping import Float
 from omegaconf import DictConfig
 from torch import Tensor
@@ -18,8 +17,8 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 # Optimizers
 from torch.optim import AdamW, Muon
 
+import wandb
 from core.utils import cosine_with_linear_wamrup
-
 from scripts.utils.ddp_setup import init_ddp
 
 torch.set_float32_matmul_precision("high")
@@ -36,13 +35,13 @@ def set_seed(base_seed: int, rank: int = 0) -> int:
 
 
 def loss_fn(
-    label: Float[Tensor, "B"],
     pred: Float[Tensor, "B 1000"],
+    label: Float[Tensor, "B"],
 ) -> torch.Tensor:
     return F.cross_entropy(pred, label)
 
 
-def build_param_groups(model, lr_adamw, lr_muon, wd):
+def build_param_groups(model, lr, wd):
     muon_params = []  # 2D weights → Muon, with decay
     adamw_decay = []  # non-2D that still get decay (rare, but possible)
     adamw_no_decay = []  # biases, norms, embeddings → AdamW, no decay
@@ -67,10 +66,10 @@ def build_param_groups(model, lr_adamw, lr_muon, wd):
             adamw_decay.append(p)
 
     return {
-        "muon": [{"params": muon_params, "lr": lr_muon}],
+        "muon": [{"params": muon_params, "lr": lr}],
         "adamw": [
-            {"params": adamw_decay, "lr": lr_adamw, "weight_decay": wd},
-            {"params": adamw_no_decay, "lr": lr_adamw, "weight_decay": 0.0},
+            {"params": adamw_decay, "lr": lr, "weight_decay": wd},
+            {"params": adamw_no_decay, "lr": lr, "weight_decay": 0.0},
         ],
     }
 
@@ -82,7 +81,7 @@ def strip_orig_mod(state_dict: dict[str, torch.Tensor]) -> dict[str, torch.Tenso
 
     return {clean_key(k): v for k, v in state_dict.items()}
 
-def probe(
+def train(
     model,
     probe,
     adamw,
@@ -96,13 +95,19 @@ def probe(
     device,
 ):
     if cfg.wandb.enabled and is_main:
-        wandb.init(
-            project=cfg.wandb.project,
-            # config={
-            # },
-            dir=cfg.wandb.dir,
-            name=cfg.wandb.name,
-        )
+        is_sweep = os.getenv("WANDB_SWEEP_ID") is not None
+        if is_sweep:
+            wandb.init(
+                dir=cfg.wandb.dir,
+            )
+        else:
+            wandb.init(
+                project=cfg.wandb.project,
+                # config={
+                # },
+                dir=cfg.wandb.dir,
+                name=cfg.wandb.name,
+            )
         wandb.define_metric("train_step")
         wandb.define_metric("epoch_step")
         wandb.define_metric("train/*", step_metric="train_step")
@@ -136,7 +141,7 @@ def probe(
                 pred = probe(logits)
             pred = pred.to(dtype=torch.float32)
             loss = (
-                loss_fn(label, pred)
+                loss_fn(pred, label)
                 / cfg.train.grad_accum
             )
             accum_window_loss += loss.detach() * cfg.train.grad_accum
@@ -185,8 +190,8 @@ def probe(
             adamw_scheduler.step()
             optimizer_step += 1
 
-        val_accuracy_sum = torch.zeros((), device=device)
-        val_steps = torch.zeros((), device=device)
+        val_total_correct = torch.zeros((), device=device)
+        val_total_preds = torch.zeros((), device=device)
         for idx, batch in enumerate(val_dataloader):
             image = batch[0].to(device=device, non_blocking=True)
             label = batch[1].to(device=device, non_blocking=True)
@@ -199,25 +204,26 @@ def probe(
                 pred = probe(logits)
             pred = pred.to(dtype=torch.float32)
             pred = pred.argmax(dim=1)
-            val_accuracy_sum += torch.sum(pred==label)/B
-            val_steps += 1
-        val_accuracy_detached = val_accuracy_sum.detach()
-        val_count_detached = val_steps.detach()
-        dist.all_reduce(val_accuracy_detached, op=dist.ReduceOp.SUM)
-        dist.all_reduce(val_count_detached, op=dist.ReduceOp.SUM)
-        val_accuracy_detached = val_accuracy_detached / torch.clamp(
-            val_count_detached, min=1
+            val_total_correct += torch.sum(pred==label)
+            val_total_preds += B
+        val_total_correct_detached = val_total_correct.detach()
+        val_total_preds_detached = val_total_preds.detach()
+        dist.all_reduce(val_total_correct_detached, op=dist.ReduceOp.SUM)
+        dist.all_reduce(val_total_preds_detached, op=dist.ReduceOp.SUM)
+        val_accuracy_detached = val_total_correct_detached / torch.clamp(
+            val_total_preds_detached, min=1
         )
 
+        loss_sum_detached = epoch_loss_sum.detach()
+        loss_count_detached = epoch_micro_steps.detach()
+        dist.all_reduce(loss_sum_detached, op=dist.ReduceOp.SUM)
+        dist.all_reduce(loss_count_detached, op=dist.ReduceOp.SUM)
+        loss_detached = loss_sum_detached / torch.clamp(loss_count_detached, min=1)
+        grad_norm_detached = grad_norm.detach()
+        dist.all_reduce(grad_norm_detached, op=dist.ReduceOp.AVG)
+
         if is_main:
-            loss_sum_detached = epoch_loss_sum.detach()
-            loss_count_detached = epoch_micro_steps.detach()
-            dist.all_reduce(loss_sum_detached, op=dist.ReduceOp.SUM)
-            dist.all_reduce(loss_count_detached, op=dist.ReduceOp.SUM)
-            loss_detached = loss_sum_detached / torch.clamp(loss_count_detached, min=1)
-            grad_norm_detached = grad_norm.detach()
-            dist.all_reduce(grad_norm_detached, op=dist.ReduceOp.AVG)
-            if is_main:
+            if cfg.wandb.enabled:
                 wandb.log(
                     {
                         "epoch_step": epoch + 1,
@@ -227,8 +233,12 @@ def probe(
                     }
                 )
             save_dir = os.path.abspath(cfg.train.checkpoint_dir)
+            run_id = wandb.run.id if wandb.run is not None else "no_wandb_run"
+            save_dir = os.path.join(
+                save_dir, f"{cfg.train.lr}_{cfg.train.weight_decay}_{run_id}"
+            )
             os.makedirs(save_dir, exist_ok=True)
-            save_path = os.path.join(save_dir, f"model_{epoch + 1}_{cfg.train.lr_adamw}_{cfg.train.weight_decay}_{wandb.run.id}.pt")
+            save_path = os.path.join(save_dir, f"model_{epoch + 1}.pt")
             torch.save(
                 {
                     "model": model.module.state_dict(),
@@ -265,8 +275,7 @@ def main(cfg: DictConfig):
 
     groups = build_param_groups(
         probe,
-        lr_adamw=cfg.train.lr_adamw,
-        lr_muon=cfg.train.lr_muon,
+        lr=cfg.train.lr,
         wd=cfg.train.weight_decay,
     )
 
@@ -304,6 +313,7 @@ def main(cfg: DictConfig):
 
     # move to devices
     model = model.to(device=device)
+    probe = probe.to(device=device)
     model = torch.compile(model)
     probe = torch.compile(probe)
     model = DDP(model, device_ids=[local_rank])
@@ -311,7 +321,7 @@ def main(cfg: DictConfig):
 
     model.eval()
 
-    probe(
+    train(
         model=model,
         probe=probe,
         adamw=adamw,

@@ -185,7 +185,12 @@ def _build_loader(
 # ---------------------------------------------------------------------------
 
 def create_imagenet_train_val(
-    batch_size: int, image_size: Tuple[int, int], mode: str, seed: int = 0
+    batch_size: int,
+    image_size: Tuple[int, int],
+    mode: str,
+    seed: int = 0,
+    num_train_threads: int = 12,
+    num_val_threads: int = 2,
 ):
     image_size = list(image_size)
     base = os.environ.get(
@@ -211,10 +216,18 @@ def create_imagenet_train_val(
 
     train_loader = _build_loader(
         _train_pipeline, train_tars, train_idxs,
-        batch_size, image_size, is_train=True, num_threads=12, seed=seed,
+        batch_size,
+        image_size,
+        is_train=True,
+        num_threads=num_train_threads,
+        seed=seed,
     )
     val_loader = _build_loader(
         _val_pipeline, val_tars, val_idxs,
-        batch_size, image_size, is_train=False, num_threads=2, seed=seed + 1_000_000,
+        batch_size,
+        image_size,
+        is_train=False,
+        num_threads=num_val_threads,
+        seed=seed + 1_000_000,
     )
     return train_loader, val_loader

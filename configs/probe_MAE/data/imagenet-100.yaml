@@ -3,3 +3,5 @@ batch_size: ${train.batch_size}
 image_size: ${train.input_size}
 mode: mini
 seed: ${train.seed}
+num_train_threads: 2
+num_val_threads: 2
