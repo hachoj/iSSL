@@ -1,0 +1,37 @@
+# -- MAE --
+seed: 2012
+drop_path_p: 0.0
+norm: rmsnorm
+use_swiglu: True
+use_bias: False
+
+# -- image stuff --
+input_size: [224, 224]
+patch_kernel: [16, 16]
+patch_stride: [16, 16]
+patch_padding: [0, 0]
+
+batch_size: 1048
+num_epochs: 10
+warmup_epochs: 1
+weight_decay: 0.05
+muon_mode: "match_rms_adamw"
+lr_adamw: 8e-4
+lr_muon: 8e-4
+adamw_betas: [0.9, 0.999]
+# # if original
+# muon_mode: "original"
+# lr_adamw: 1e-4
+# lr_muon: 0.01
+grad_clip: -1
+grad_accum: 1
+checkpoint_init_dir: ""
+
+# -- Logging --
+checkpoint_dir: "output/checkpoints/probe_MAE/ViT-S16"
+checkpoint_init_dir: "output/checkpoints/MAE/ViT-S16"
+
+every_n_step: 10
+
+# -- Organize Later --
+num_classes: 1000

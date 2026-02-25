@@ -6,7 +6,7 @@ from jaxtyping import Float
 from torch import Tensor
 
 
-class attentive_probe(nn.Module):
+class AttentiveProbe(nn.Module):
     def __init__(self, dim: int, num_classes: int):
         super().__init__()
 

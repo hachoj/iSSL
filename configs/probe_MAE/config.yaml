@@ -1,0 +1,14 @@
+defaults:
+  - data: imagenet-1k.yaml
+  - model: MAE
+  - probe: probe
+  - train: MAE
+  - wandb: MAE
+  - _self_
+
+hydra:
+  run:
+    dir: output/hydra/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: output/hydra/${now:%Y-%m-%d}
+    subdir: ${now:%H-%M-%S}

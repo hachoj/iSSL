@@ -1,0 +1,4 @@
+project: MAE_Attentive_Probe
+name: ViT-S/16
+dir: output/wandb/MAE
+enabled: true

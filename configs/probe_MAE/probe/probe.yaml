@@ -1,0 +1,3 @@
+_target_: core.layers.AttentiveProbe
+dim: ${model.dim}
+num_classes: ${train.num_classes}
