@@ -1,4 +1,4 @@
-program: scripts/probe_MAE.py
+program: scripts/probe_MAE_adam.py
 project: probe_MAE
 entity: hachoj-university-of-florida
 method: grid

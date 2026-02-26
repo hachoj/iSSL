@@ -15,7 +15,7 @@ from torch import Tensor
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 # Optimizers
-from torch.optim import AdamW, Muon
+from torch.optim import AdamW
 
 import wandb
 from core.utils import cosine_with_linear_wamrup
@@ -42,8 +42,7 @@ def loss_fn(
 
 
 def build_param_groups(model, lr, wd):
-    muon_params = []  # 2D weights → Muon, with decay
-    adamw_decay = []  # non-2D that still get decay (rare, but possible)
+    adamw_decay = []  # parameters that still get decay
     adamw_no_decay = []  # biases, norms, embeddings → AdamW, no decay
 
     no_decay_keywords = {"bias", "norm", "ln_", "layernorm", "embedding"}
@@ -55,23 +54,17 @@ def build_param_groups(model, lr, wd):
         # Check if this param should skip weight decay
         skip_decay = any(kw in name.lower() for kw in no_decay_keywords)
 
-        if p.ndim == 2 and not skip_decay:
-            # Standard weight matrices → Muon
-            muon_params.append(p)
-        elif skip_decay:
+        if skip_decay:
             # Biases, norms, embeddings → AdamW without decay
             adamw_no_decay.append(p)
         else:
             # Everything else (e.g., 1D scales) → AdamW with decay
             adamw_decay.append(p)
 
-    return {
-        "muon": [{"params": muon_params, "lr": lr, "weight_decay": wd}],
-        "adamw": [
-            {"params": adamw_decay, "lr": lr, "weight_decay": wd},
-            {"params": adamw_no_decay, "lr": lr, "weight_decay": 0.0},
-        ],
-    }
+    return [
+        {"params": adamw_decay, "lr": lr, "weight_decay": wd},
+        {"params": adamw_no_decay, "lr": lr, "weight_decay": 0.0},
+    ]
 
 
 def strip_orig_mod(state_dict: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
@@ -85,9 +78,7 @@ def train(
     model,
     probe,
     adamw,
-    muon,
     adamw_scheduler,
-    muon_scheduler,
     train_dataloader,
     val_dataloader,
     cfg,
@@ -126,7 +117,6 @@ def train(
         micro_step = 0
         for idx, batch in enumerate(train_dataloader):
             if micro_step == 0:
-                muon.zero_grad(set_to_none=True)
                 adamw.zero_grad(set_to_none=True)
                 accum_window_loss = torch.zeros((), device=device)
                 accum_window_steps = torch.zeros((), device=device)
@@ -151,9 +141,7 @@ def train(
             if micro_step == cfg.train.grad_accum:
                 loss.backward()
                 grad_norm = torch.nn.utils.clip_grad_norm_(probe.parameters(), grad_clip)
-                muon.step()
                 adamw.step()
-                muon_scheduler.step()
                 adamw_scheduler.step()
                 optimizer_step += 1
                 if (
@@ -184,9 +172,7 @@ def train(
         # --- Handle the case where the last few batches in the epoch don't fill up a grad_accum window ---
         if micro_step > 0:
             grad_norm = torch.nn.utils.clip_grad_norm_(probe.parameters(), grad_clip)
-            muon.step()
             adamw.step()
-            muon_scheduler.step()
             adamw_scheduler.step()
             optimizer_step += 1
 
@@ -232,7 +218,7 @@ def train(
                         "epoch/val_top1": val_accuracy_detached.item(),  # pyrefly:ignore
                     }
                 )
-            save_dir = os.path.abspath(cfg.train.checkpoint_dir)
+            save_dir = os.path.abspath(f"{cfg.train.checkpoint_dir}_adam")
             run_id = wandb.run.id if wandb.run is not None else "no_wandb_run"
             save_dir = os.path.join(
                 save_dir, f"{cfg.train.lr}_{cfg.train.weight_decay}_{run_id}"
@@ -243,8 +229,7 @@ def train(
                 {
                     "model": model.module.state_dict(),
                     "probe": probe.module.state_dict(),
-                    "optimizer_muon": muon.state_dict(),
-                    "optimizer_adamw": adamw.state_dict(),
+                    "optimizer": adamw.state_dict(),
                     "step": epoch,
                 },
                 save_path,
@@ -279,15 +264,7 @@ def main(cfg: DictConfig):
         wd=cfg.train.weight_decay,
     )
 
-    muon = Muon(groups["muon"], adjust_lr_fn=cfg.train.muon_mode)  # pyrefly:ignore
-    adamw = AdamW(groups["adamw"], betas=tuple(cfg.train.adamw_betas))  # pyrefly:ignore
-
-    muon_scheduler = cosine_with_linear_wamrup(
-        optimizer=muon,
-        num_epochs=cfg.train.num_epochs,
-        warmup_epochs=cfg.train.warmup_epochs,
-        steps_per_epoch=len(train_dataloader) // cfg.train.grad_accum,
-    )
+    adamw = AdamW(groups, betas=tuple(cfg.train.adamw_betas))  # pyrefly:ignore
     adamw_scheduler = cosine_with_linear_wamrup(
         optimizer=adamw,
         num_epochs=cfg.train.num_epochs,
@@ -322,9 +299,7 @@ def main(cfg: DictConfig):
         model=model,
         probe=probe,
         adamw=adamw,
-        muon=muon,
         adamw_scheduler=adamw_scheduler,
-        muon_scheduler=muon_scheduler,
         train_dataloader=train_dataloader,
         val_dataloader=val_dataloader,
         cfg=cfg,

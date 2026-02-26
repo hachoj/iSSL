@@ -58,17 +58,16 @@ def _train_pipeline(
     )
     label = fn.python_function(label, function=_parse_cls)
 
-    # Fused JPEG decode + random crop on GPU (avoids decoding full res)
-    img = fn.decoders.image_random_crop(
-        img_raw,
-        device="mixed",
-        output_type=types.RGB,
-        random_aspect_ratio=[0.75, 4.0 / 3.0],
+    # DALI RandomResizedCrop equivalent.
+    img = fn.decoders.image(img_raw, device="mixed", output_type=types.RGB)
+    img = fn.random_resized_crop(
+        img,
+        device="gpu",
+        size=image_size,
+        random_aspect_ratio=[1.0, 1.0],
         random_area=[0.08, 1.0],
         seed=aug_seed,
     )
-    img = fn.resize(img, device="gpu", size=image_size)
-    coin = fn.random.coin_flip(probability=0.2, seed=aug_seed + 1)
     img = fn.crop_mirror_normalize(
         img,
         device="gpu",
@@ -76,7 +75,6 @@ def _train_pipeline(
         output_layout="CHW",
         mean=[0.485 * 255, 0.456 * 255, 0.406 * 255],
         std=[0.229 * 255, 0.224 * 255, 0.225 * 255],
-        mirror=coin,
     )
     return img, label
 
@@ -97,13 +95,17 @@ def _val_pipeline(tar_paths, idx_paths, image_size, shard_id, num_shards, reader
     label = fn.python_function(label, function=_parse_cls)
 
     img = fn.decoders.image(img_raw, device="mixed", output_type=types.RGB)
-    # Exact resize to match your original v2.Resize(image_size)
-    img = fn.resize(img, device="gpu", size=image_size)
+    # ImageNet eval: resize shorter side to ~256 for 224-crop, then center crop.
+    resize_shorter = int(round(float(image_size[0]) * (256.0 / 224.0)))
+    img = fn.resize(img, device="gpu", resize_shorter=resize_shorter)
     img = fn.crop_mirror_normalize(
         img,
         device="gpu",
         dtype=types.FLOAT,
         output_layout="CHW",
+        crop=image_size,
+        crop_pos_x=0.5,
+        crop_pos_y=0.5,
         mean=[0.485 * 255, 0.456 * 255, 0.406 * 255],
         std=[0.229 * 255, 0.224 * 255, 0.225 * 255],
     )

@@ -1,0 +1,6 @@
+wandb_version: 1
+
+train.lr:
+  value: 0.001
+train.weight_decay:
+  value: 0.001

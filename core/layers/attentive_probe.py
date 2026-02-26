@@ -15,7 +15,7 @@ class AttentiveProbe(nn.Module):
         assert dim % self.head_dim == 0, "dim needs to be divisible by 64"
         self.num_heads = dim // self.head_dim
 
-        self.query_token = nn.Parameter(torch.randn(dim))
+        self.query_token = nn.Parameter(torch.randn(dim) * 0.02)
 
         self.kv_proj = nn.Linear(dim, 2 * dim)
         self.linear_out = nn.Linear(dim, num_classes)
